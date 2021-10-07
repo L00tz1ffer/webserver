@@ -1,0 +1,43 @@
+version: "3.2"
+ 
+
+ 
+services: 
+  webserver:
+    container_name: webserver
+    build: webserver
+    ports: 
+      - 8080:80
+    volumes: 
+      - ./code:/var/www/html
+      - ./webserver/php-ini-overrides.ini:/usr/local/etc/php/conf.d/php-ini-overrides.ini
+      - ./webserver/phpsessions:/var/www/phpsessionfiles
+
+  database:
+    image: mariadb:latest
+    container_name: mariadb
+    ports: 
+      - 3306:3306
+    environment: 
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=user
+      
+
+    volumes: 
+      - ./mysql:/var/lib/mysql
+      
+      
+  phpmyadmin:
+    links:
+      - database
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8081:80"
